@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- mini smaltovaná cedule: červený obdélník s bílým rámečkem -->
+  <rect x="4" y="18" width="56" height="28" rx="4"
+        fill="#AF1E2A" stroke="#fff" stroke-width="3"/>
+  <text x="32" y="39" text-anchor="middle"
+        font-family="Oswald, Arial Narrow, sans-serif" font-weight="600"
+        font-size="20" letter-spacing="1" fill="#fff">PU</text>
+</svg>

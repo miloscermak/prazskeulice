@@ -1,0 +1,14 @@
+# Python virtuální prostředí
+pipeline/.venv/
+__pycache__/
+*.pyc
+
+# API klíče a lokální nastavení
+.env
+*.env
+
+# macOS
+.DS_Store
+
+# Playwright artefakty (screenshoty při generování og-image)
+.playwright-mcp/

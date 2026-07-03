@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pražský uličník v číslech</title>
+<meta name="description" content="8 066 pražských ulic v číslech. 1 960 pojmenovaných po mužích, 160 po ženách. Statistiky a jazykové funfakty o názvech pražských ulic a náměstí.">
+
+<!-- favicon: mini smaltovaná cedule -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+<!-- Open Graph / sdílení na sítích. Až bude finální doména (Netlify),
+     přepiš og:url a og:image na absolutní URL té domény. -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="cs_CZ">
+<meta property="og:title" content="Pražský uličník v číslech">
+<meta property="og:description" content="8 066 pražských ulic. 1 960 pojmenovaných po mužích, 160 po ženách.">
+<meta property="og:url" content="https://miloscermak.github.io/prazske-ulice/">
+<meta property="og:image" content="https://miloscermak.github.io/prazske-ulice/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pražský uličník v číslech">
+<meta name="twitter:description" content="8 066 pražských ulic. 1 960 pojmenovaných po mužích, 160 po ženách.">
+<meta name="twitter:image" content="https://miloscermak.github.io/prazske-ulice/og-image.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --enamel:#AF1E2A;        /* smalt pražské cedule */
+  --enamel-dark:#8C1622;
+  --blue:#1D4E9E;          /* modrá orientačních čísel */
+  --plaster:#EDE8DD;       /* omítka */
+  --ink:#26221c;
+  --paper:#FBF9F3;
+  --line:#d8d2c4;
+  --sign-font:'Oswald',sans-serif;
+  --body-font:'IBM Plex Sans',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--plaster);color:var(--ink);font-family:var(--body-font);line-height:1.6;font-size:17px}
+main{max-width:920px;margin:0 auto;padding:0 20px 100px}
+
+/* ---------- smaltovaná cedule ---------- */
+.sign{
+  background:linear-gradient(160deg,var(--enamel) 0%,var(--enamel-dark) 100%);
+  color:#fff;
+  border:3px solid #fff;
+  outline:1px solid rgba(0,0,0,.25);
+  border-radius:6px;
+  box-shadow:0 3px 10px rgba(38,34,28,.28), inset 0 1px 0 rgba(255,255,255,.25);
+  font-family:var(--sign-font);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  padding:.5em 1em;
+  display:inline-block;
+}
+.sign.blue{background:linear-gradient(160deg,#2458af,#173e80)}
+.sign small{display:block;font-size:.42em;font-weight:400;letter-spacing:.28em;opacity:.85;margin-bottom:.15em}
+
+/* ---------- hero ---------- */
+header{padding:76px 0 44px;text-align:center}
+.hero-sign{font-size:clamp(30px,6.4vw,58px);font-weight:600;padding:.45em .8em .55em;line-height:1.06;max-width:100%}
+header p.sub{max-width:560px;margin:26px auto 0;color:#5b5449}
+#demo-badge{display:none;margin-top:14px;font-family:var(--mono);font-size:13px;background:#26221c;color:var(--plaster);padding:4px 12px;border-radius:3px}
+
+/* ---------- sekce ---------- */
+section{margin-top:84px}
+.sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.sec-head .sign{font-size:19px;font-weight:500}
+.sec-head .note{color:#6b6355;font-size:15px}
+.lede{max-width:640px;color:#4b453b;margin:8px 0 26px}
+
+/* ---------- kategorie: bar chart z cedulí ---------- */
+.bar-row{display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:center;margin:9px 0}
+.bar-label{font-family:var(--sign-font);text-transform:uppercase;letter-spacing:.04em;font-size:14.5px;text-align:right;color:#3d372e}
+.bar-track{position:relative;height:34px}
+.bar{
+  height:100%;border-radius:4px;border:2px solid #fff;outline:1px solid rgba(0,0,0,.18);
+  background:linear-gradient(160deg,var(--enamel),var(--enamel-dark));
+  box-shadow:0 2px 5px rgba(38,34,28,.22);
+  min-width:6px;
+  transition:width .8s cubic-bezier(.2,.7,.2,1);
+}
+.bar-val{position:absolute;left:calc(var(--w) + 12px);top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:13.5px;color:#5b5449;white-space:nowrap}
+@media (max-width:640px){.bar-row{grid-template-columns:1fr}.bar-label{text-align:left}}
+
+/* ---------- gender ---------- */
+.gender{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:26px}
+.gender .sign{display:block;text-align:center;padding:26px 10px 30px}
+.gender .num{font-size:clamp(44px,8vw,76px);font-weight:600;line-height:1}
+.gender .pct{font-family:var(--mono);text-transform:none;letter-spacing:0;font-size:14px;opacity:.85;margin-top:6px}
+.gender-note{margin-top:16px;font-size:15px;color:#6b6355;max-width:600px}
+@media (max-width:540px){.gender{grid-template-columns:1fr}}
+
+/* ---------- funfakty ---------- */
+.facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:26px}
+.fact{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px 20px}
+.fact h3{font-family:var(--sign-font);font-weight:500;text-transform:uppercase;letter-spacing:.08em;font-size:13px;color:var(--enamel-dark);margin-bottom:8px}
+.fact .big{font-family:var(--mono);font-size:15px}
+.fact ul{list-style:none}
+.fact li{display:flex;justify-content:space-between;gap:10px;padding:2px 0;font-size:15px}
+.fact li span:last-child{font-family:var(--mono);color:#6b6355}
+
+/* ---------- hledání ---------- */
+.search-box{margin-top:26px}
+.search-box input{
+  width:100%;font:inherit;font-size:18px;padding:14px 18px;
+  border:2px solid var(--ink);border-radius:6px;background:var(--paper);color:var(--ink);
+}
+.search-box input:focus{outline:3px solid var(--blue);outline-offset:2px}
+#vysledky{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+.hit{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hit .sign{font-size:16px;font-weight:500;padding:.35em .8em}
+.hit .meta{font-size:14.5px;color:#5b5449}
+.hit .kat{font-family:var(--mono);font-size:12.5px;background:#26221c;color:var(--plaster);padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.06em}
+
+@media (max-width:520px){
+  .bar{max-width:calc(100% - 112px)}
+  .bar-val{left:auto;right:0;font-size:12px}
+}
+
+/* ---------- kvíz ---------- */
+.kviz-box{margin-top:26px;text-align:center}
+.kviz-sign{font-size:clamp(22px,5vw,34px);font-weight:600;padding:.5em 1em;min-width:min(420px,90%)}
+.kviz-btns{margin-top:22px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.kviz-btns button{
+  font-family:var(--sign-font);text-transform:uppercase;letter-spacing:.06em;font-size:16px;
+  padding:12px 26px;border-radius:6px;cursor:pointer;
+  border:2px solid var(--ink);background:var(--paper);color:var(--ink);
+}
+.kviz-btns button:hover{background:var(--ink);color:var(--plaster)}
+.kviz-btns button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+#kviz-feedback{margin-top:16px;min-height:1.6em;font-size:16px}
+#kviz-feedback .spravne{color:#1d6b34;font-weight:600}
+#kviz-feedback .spatne{color:var(--enamel-dark);font-weight:600}
+.kviz-skore{margin-top:6px;font-family:var(--mono);font-size:13.5px;color:#6b6355}
+
+footer{margin-top:100px;padding-top:24px;border-top:1px solid var(--line);font-size:14px;color:#6b6355}
+@media (prefers-reduced-motion:reduce){.bar{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="sign hero-sign"><small>Hlavní město Praha</small>Pražský uličník<br>v&nbsp;číslech</div>
+  <p class="sub">Co říkají názvy <strong id="celkem">—</strong> pražských ulic a náměstí o tom, koho si tohle město chce pamatovat.</p>
+  <span id="demo-badge">ukázková data — spusť pipeline pro skutečná čísla</span>
+</header>
+
+<section id="sec-kategorie">
+  <div class="sec-head"><span class="sign">Po kom a po čem</span><span class="note">kategorie původu názvu</span></div>
+  <p class="lede">Každá ulice je malý pomník. Tady je celý panteon pohromadě: lidé, města, řemesla, zvířata i data, na která se nesmí zapomenout.</p>
+  <div id="kategorie-chart"></div>
+</section>
+
+<section id="sec-gender">
+  <div class="sec-head"><span class="sign">Gender gap</span><span class="note">ulice pojmenované po lidech</span></div>
+  <div class="gender">
+    <div class="sign"><small>pojmenováno po mužích</small><div class="num" id="g-muzi">—</div><div class="pct" id="g-muzi-pct"></div></div>
+    <div class="sign blue"><small>pojmenováno po ženách</small><div class="num" id="g-zeny">—</div><div class="pct" id="g-zeny-pct"></div></div>
+  </div>
+  <p class="gender-note" id="g-note"></p>
+</section>
+
+<section id="sec-profese">
+  <div class="sec-head"><span class="sign">Pomník z asfaltu</span><span class="note">čím se živili lidé z cedulí</span></div>
+  <div id="profese-chart"></div>
+</section>
+
+<section id="sec-jazyk">
+  <div class="sec-head"><span class="sign">Jazykový koutek</span><span class="note">co prozradí samotná slova</span></div>
+  <div class="facts" id="facts"></div>
+</section>
+
+<section id="sec-hledani">
+  <div class="sec-head"><span class="sign">Najdi svou ulici</span></div>
+  <p class="lede">Zadej název a zjisti, do jaké kategorie patří a po kom nebo po čem se jmenuje.</p>
+  <div class="search-box"><input id="q" type="search" placeholder="Např. Pařížská, Na Bojišti, Šeříková…" aria-label="Hledat ulici"></div>
+  <div id="vysledky"></div>
+</section>
+
+<section id="sec-kviz">
+  <div class="sec-head"><span class="sign">Kvíz</span><span class="note">skutečná, nebo vymyšlená?</span></div>
+  <p class="lede">Praha má ulice Poštolčí, Na Bambouzku i K Painovce. Poznáš, které cedule jsme si vymysleli?</p>
+  <div class="kviz-box">
+    <div class="sign kviz-sign" id="kviz-nazev">—</div>
+    <div class="kviz-btns">
+      <button id="btn-real" type="button">Existuje</button>
+      <button id="btn-fake" type="button">Vymyšlená</button>
+      <button id="btn-dalsi" type="button" hidden>Další ulice →</button>
+    </div>
+    <p id="kviz-feedback" aria-live="polite"></p>
+    <p class="kviz-skore">Skóre: <span id="kviz-spravne">0</span>/<span id="kviz-celkem">0</span></p>
+  </div>
+</section>
+
+<footer>
+  Data: Wikidata (vlastnost P138 „pojmenováno po“) + klasifikace jazykovým modelem.
+  Čísla ber jako kvalifikovaný odhad, ne jako úřední statistiku — tu má <a href="https://www.prazskyulicnik.cz">Pražský uličník</a>.
+</footer>
+</main>
+
+<script src="data.js"></script>
+<script>
+const D = window.ULICE_DATA;
+const KAT_NAZVY = {
+  osoba:"osobnosti", svaty_cirkev:"světci a církev", obec_cz:"česká města a obce",
+  geografie_cz:"česká geografie", zahranici:"zahraničí", rostlina:"rostliny",
+  zvire:"zvířata", remeslo_profese:"řemesla a profese", udalost_datum:"události a data",
+  mistni_nazev:"pomístní názvy", vlastnost:"vzhled a charakter", ostatni:"ostatní"
+};
+const fmt = n => n.toLocaleString("cs-CZ");
+
+document.getElementById("celkem").textContent = fmt(D.celkem);
+if (D.demo) document.getElementById("demo-badge").style.display = "inline-block";
+
+function barChart(el, obj, total){
+  const max = Math.max(...Object.values(obj));
+  for (const [k, v] of Object.entries(obj)){
+    const w = Math.max(2, v / max * 100);
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    row.innerHTML = `<div class="bar-label">${KAT_NAZVY[k] || k}</div>
+      <div class="bar-track" style="--w:${w * .72}%">
+        <div class="bar" style="width:${w * .72}%"></div>
+        <div class="bar-val">${fmt(v)} · ${(v/total*100).toFixed(1)} %</div>
+      </div>`;
+    el.appendChild(row);
+  }
+}
+barChart(document.getElementById("kategorie-chart"), D.kategorie, D.celkem);
+
+const muzi = D.pohlavi["muž"] || 0, zeny = D.pohlavi["žena"] || 0, znami = muzi + zeny;
+document.getElementById("g-muzi").textContent = fmt(muzi);
+document.getElementById("g-zeny").textContent = fmt(zeny);
+if (znami){
+  document.getElementById("g-muzi-pct").textContent = (muzi/znami*100).toFixed(1) + " %";
+  document.getElementById("g-zeny-pct").textContent = (zeny/znami*100).toFixed(1) + " %";
+  document.getElementById("g-note").textContent =
+    zeny ? `Na jednu ulici pojmenovanou po ženě připadá ${(muzi/zeny).toFixed(1)} ulic pojmenovaných po mužích.` : "";
+}
+
+const profTotal = Object.values(D.profese).reduce((a,b)=>a+b,0);
+barChart(document.getElementById("profese-chart"), D.profese, profTotal);
+
+const facts = document.getElementById("facts");
+function fact(title, html){
+  const d = document.createElement("div");
+  d.className = "fact";
+  d.innerHTML = `<h3>${title}</h3>${html}`;
+  facts.appendChild(d);
+}
+const j = D.jazyk;
+fact("Nejdelší názvy", `<ul>${j.nejdelsi.map(n=>`<li><span>${n}</span><span>${n.length}</span></li>`).join("")}</ul>`);
+fact("Nejkratší názvy", `<ul>${j.nejkratsi.map(n=>`<li><span>${n}</span><span>${n.length}</span></li>`).join("")}</ul>`);
+fact("Nejčastější koncovky", `<ul>${Object.entries(j.pripony).slice(0,6).map(([p,c])=>`<li><span>${p}</span><span>${fmt(c)}</span></li>`).join("")}</ul>`);
+fact("Předložkové názvy", `<p class="big">${fmt(j.predlozkove)} ulic začíná předložkou<br>(Na, Pod, U, K, V, Za…)</p>`);
+const pis = Object.entries(j.pismena);
+fact("Písmena na startu", `<ul>${pis.slice(0,4).map(([p,c])=>`<li><span>nejčastěji ${p}</span><span>${fmt(c)}</span></li>`).join("")}<li><span>nejvzácněji ${pis[pis.length-1][0]}</span><span>${fmt(pis[pis.length-1][1])}</span></li></ul>`);
+
+const q = document.getElementById("q"), out = document.getElementById("vysledky");
+q.addEventListener("input", () => {
+  const t = q.value.trim().toLowerCase();
+  out.innerHTML = "";
+  if (t.length < 2) return;
+  const hits = D.ulice.filter(u => u.n.toLowerCase().includes(t)).slice(0, 8);
+  if (!hits.length){ out.innerHTML = `<p class="meta">Nic. Buď je název jinak, nebo taková ulice v datech (zatím) není.</p>`; return; }
+  for (const u of hits){
+    const d = document.createElement("div");
+    d.className = "hit";
+    d.innerHTML = `<span class="sign">${u.n}</span>
+      <span class="kat">${KAT_NAZVY[u.k] || u.k}</span>
+      ${u.v ? `<span class="meta">${u.v}</span>` : ""}`;
+    out.appendChild(d);
+  }
+});
+
+// ---------- kvíz ----------
+const FEJKY_RAW = [
+  "Na Přeslici","Pod Vejminkem","U Tří kominíků","Na Kropence","K Sušírně",
+  "Mezi Ovčíny","Za Flusárnou","Na Cvrčkově","U Slepé lávky","Pod Kozím hrádkem",
+  "Šindelářská","Mydlářova","Cínařská","Voskařská","Přadlácká",
+  "Loupežnická","Mlhová","Ohnivá","Kapradinová","Ostružinová",
+  "Datlí","Rorýsí","Ježčí","Kuní","Vydří",
+  "Bochníkova","Klobouková","Vřetenová","Šalamounská","Petrklíčová",
+  "Na Zvonařce Horní","U Staré šatlavy","Pod Trdlicí","Na Houpačkách","K Zvonici",
+  "Řemenářská","Kolomazná","Perleťová","Sanytrová","Kvasničná",
+  "Bratří Vránových","Anežky Hodinové","Vavřincova","Dorotina","Zikmundovská",
+  "Na Ztracence","U Vodníkovy tůně","Pod Sedmikráskou","Za Větrolamem","Na Kohoutku",
+  "Slaměná","Oblačná","Půlnoční","Zrcadlová","Malinová stezka"
+];
+const realSet = new Set(D.ulice.map(u => u.n.toLowerCase()));
+const FEJKY = FEJKY_RAW.filter(f => !realSet.has(f.toLowerCase()));
+
+const kSign = document.getElementById("kviz-nazev"),
+      kFeed = document.getElementById("kviz-feedback"),
+      bReal = document.getElementById("btn-real"),
+      bFake = document.getElementById("btn-fake"),
+      bDalsi = document.getElementById("btn-dalsi");
+let aktualni = null, spravne = 0, celkem = 0;
+
+function nahodna(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+function dalsiOtazka(){
+  const jeFake = Math.random() < 0.5 && FEJKY.length;
+  aktualni = jeFake
+    ? { n: nahodna(FEJKY), fake: true }
+    : { ...nahodna(D.ulice), fake: false };
+  kSign.textContent = aktualni.n;
+  kFeed.innerHTML = "";
+  bReal.hidden = bFake.hidden = false;
+  bDalsi.hidden = true;
+}
+
+function odpoved(tipExistuje){
+  celkem++;
+  const ok = tipExistuje !== aktualni.fake;
+  if (ok) spravne++;
+  const detail = aktualni.fake
+    ? "Tuhle jsme si vymysleli."
+    : `Existuje — kategorie ${KAT_NAZVY[aktualni.k] || aktualni.k}${aktualni.v ? ", " + aktualni.v : ""}.`;
+  kFeed.innerHTML = `<span class="${ok ? "spravne" : "spatne"}">${ok ? "Správně!" : "Vedle."}</span> ${detail}`;
+  document.getElementById("kviz-spravne").textContent = spravne;
+  document.getElementById("kviz-celkem").textContent = celkem;
+  bReal.hidden = bFake.hidden = true;
+  bDalsi.hidden = false;
+  bDalsi.focus();
+}
+
+bReal.addEventListener("click", () => odpoved(true));
+bFake.addEventListener("click", () => odpoved(false));
+bDalsi.addEventListener("click", dalsiOtazka);
+dalsiOtazka();
+</script>
+</body>
+</html>
