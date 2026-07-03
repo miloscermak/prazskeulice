@@ -4,10 +4,10 @@ Pozn.: Projekt se původně jmenoval „Pražský uličník v číslech", přejm
 3. 7. 2026 kvůli kolizi s existujícím projektem Pražský uličník (Lašťovka,
 prazskyulicnik.cz).
 
-Datum předání: 3. 7. 2026 (aktualizováno po dokončení fáze pohlaví + kvíz)
-Stav: v1.5 — data kompletní, pohlaví doplněno, kvíz hotový, web běží
-lokálně na laptopu. Body 1 a 4 roadmapy jsou HOTOVÉ a spuštěné.
-Další krok = bod 2: nasadit na GitHub Pages.
+Datum předání: 3. 7. 2026 (aktualizováno po dokončení bodu 2 — nasazení)
+Stav: v2.0 — data kompletní, kvíz hotový, web nasazený. Body 1, 2 a 4
+roadmapy jsou HOTOVÉ. Kód je na GitHubu (miloscermak/prazskeulice),
+web běží na Netlify. Další krok = bod 3 (mapa Prahy) nebo 5 (Ve vahách).
 
 ## Co projekt dělá
 
@@ -32,7 +32,12 @@ pipeline/
 web/
   index.html              # celý web, single file (CSS i JS inline)
   data.js                 # window.ULICE_DATA = {...}, generuje skript 03
+  jak-vznikl.html         # „jak vznikl tento web" — technické zákulisí
+  favicon.svg             # mini cedule
+  og-image.png            # 1200×630, cedule s gender gapem (pro sdílení)
+jak-vznikl-web-technicky.md  # zdrojový text stránky jak-vznikl.html
 README.md
+.gitignore                # .venv, .env, .DS_Store
 ```
 
 ## Datové formáty
@@ -77,13 +82,15 @@ ulice [{n, k, v}]}` (n=název, k=kategorie, v=krátké vysvětlení).
 4. Duplicitní/zaniklé ulice z Wikidat nejsou filtrované (8 066 vs.
    očekávaných ~7 800). Případně filtrovat přes P576 (datum zániku).
 
-## Nasazení (návrh)
+## Nasazení (HOTOVO 3. 7. 2026)
 
-GitHub Pages: repo miloscermak/prazske-ulice, stačí pushnout složku `web/`
-(nebo celý projekt a Pages nastavit na /web). Žádný build, žádný backend.
-Před nasazením: doplnit OG metatagy (og:title, og:description, og:image —
-ideálně vygenerovaná cedule s gender gapem), favicon (mini cedule),
-`<html lang="cs">` už je.
+- GitHub: https://github.com/miloscermak/prazskeulice (celý projekt vč.
+  pipeline a dat; web je ve složce `web/`)
+- Netlify: publish directory `web/`, žádný build command (statický web).
+  Deploy se spouští automaticky pushem na main.
+- OG metatagy, og-image.png i favicon jsou v index.html. POZOR: og:url
+  a og:image používají absolutní URL — při změně domény přepsat v hlavě
+  index.html (je to okomentované, jedno místo).
 
 ## Bezpečnost
 
@@ -96,12 +103,12 @@ lze do repa dát (jsou to veřejná data), `.venv/` do `.gitignore`.
 1. **Pohlaví** — HOTOVO A SPUŠTĚNO (3. 7.). Heuristika vyřešila 748,
    LLM 191, výsledek v data/pohlavi_doplnene.json a promítnutý
    ve web/data.js. Znovu spouštět jen při změně klasifikace.
-2. **Nasazení na GitHub Pages** — DALŠÍ ÚKOL, ZAČÍT TÍMTO.
-   Repo miloscermak/prazske-ulice, Pages na složku /web. Přidat OG
-   metatagy (návrh og:description: „8 066 pražských ulic. 1 960
-   pojmenovaných po mužích, 160 po ženách."), og:image s cedulí,
-   favicon (mini cedule). Před commitem: .gitignore s .venv/ a .env,
-   zkontrolovat že nikde není API klíč.
+2. **Nasazení** — HOTOVO (3. 7.). GitHub miloscermak/prazskeulice
+   + Netlify (publish dir `web/`). OG metatagy, og-image, favicon,
+   .gitignore i kontrola API klíčů hotové. Navíc: stránka
+   jak-vznikl.html (zákulisí projektu), štítek Inspiruj.se v patičce,
+   opravená typografie cedulí (line-height kvůli diakritice) a bug
+   v boxu „Písmena na startu" (číselné klíče v Object.entries).
 3. **Mapa Prahy** — ulice obarvené podle kategorie; ukáže tematické
    čtvrti (skladatelé, města, rostliny) jako barevné ostrovy. Geometrie
    z OSM Overpass (highway s name v Praze), join s klasifikace.json
