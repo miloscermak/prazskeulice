@@ -58,11 +58,11 @@ main{max-width:920px;margin:0 auto;padding:0 20px 100px}
   display:inline-block;
 }
 .sign.blue{background:linear-gradient(160deg,#2458af,#173e80)}
-.sign small{display:block;font-size:.42em;font-weight:400;letter-spacing:.28em;opacity:.85;margin-bottom:.15em}
+.sign small{display:block;font-size:.42em;font-weight:400;letter-spacing:.28em;opacity:.85;margin-bottom:.3em}
 
 /* ---------- hero ---------- */
 header{padding:76px 0 44px;text-align:center}
-.hero-sign{font-size:clamp(30px,6.4vw,58px);font-weight:600;padding:.45em .8em .55em;line-height:1.06;max-width:100%}
+.hero-sign{font-size:clamp(30px,6.4vw,58px);font-weight:600;padding:.45em .8em .55em;line-height:1.22;max-width:100%}
 header p.sub{max-width:560px;margin:26px auto 0;color:#5b5449}
 #demo-badge{display:none;margin-top:14px;font-family:var(--mono);font-size:13px;background:#26221c;color:var(--plaster);padding:4px 12px;border-radius:3px}
 
@@ -258,7 +258,9 @@ fact("Nejdelší názvy", `<ul>${j.nejdelsi.map(n=>`<li><span>${n}</span><span>$
 fact("Nejkratší názvy", `<ul>${j.nejkratsi.map(n=>`<li><span>${n}</span><span>${n.length}</span></li>`).join("")}</ul>`);
 fact("Nejčastější koncovky", `<ul>${Object.entries(j.pripony).slice(0,6).map(([p,c])=>`<li><span>${p}</span><span>${fmt(c)}</span></li>`).join("")}</ul>`);
 fact("Předložkové názvy", `<p class="big">${fmt(j.predlozkove)} ulic začíná předložkou<br>(Na, Pod, U, K, V, Za…)</p>`);
-const pis = Object.entries(j.pismena);
+// Pozor: Object.entries řadí číselné klíče ("1","5"…) dopředu — vyfiltrovat
+// číslice (ulice typu 5. května) a seřadit podle četnosti.
+const pis = Object.entries(j.pismena).filter(([p]) => isNaN(p)).sort((a,b) => b[1]-a[1]);
 fact("Písmena na startu", `<ul>${pis.slice(0,4).map(([p,c])=>`<li><span>nejčastěji ${p}</span><span>${fmt(c)}</span></li>`).join("")}<li><span>nejvzácněji ${pis[pis.length-1][0]}</span><span>${fmt(pis[pis.length-1][1])}</span></li></ul>`);
 
 const q = document.getElementById("q"), out = document.getElementById("vysledky");
