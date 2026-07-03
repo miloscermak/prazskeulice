@@ -1,4 +1,8 @@
-# PŘEDÁVACÍ PROTOKOL — Pražský uličník v číslech
+# PŘEDÁVACÍ PROTOKOL — Pražské ulice v číslech
+
+Pozn.: Projekt se původně jmenoval „Pražský uličník v číslech", přejmenováno
+3. 7. 2026 kvůli kolizi s existujícím projektem Pražský uličník (Lašťovka,
+prazskyulicnik.cz).
 
 Datum předání: 3. 7. 2026 (aktualizováno po dokončení fáze pohlaví + kvíz)
 Stav: v1.5 — data kompletní, pohlaví doplněno, kvíz hotový, web běží

@@ -1,4 +1,4 @@
-# Pražský uličník v číslech
+# Pražské ulice v číslech
 
 Statistiky a funfakty o názvech cca 7 800 pražských ulic a náměstí.
 Pipeline: Wikidata (SPARQL) → LLM doklasifikace (OpenRouter) → statický web.
