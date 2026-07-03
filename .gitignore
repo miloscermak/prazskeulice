@@ -12,3 +12,6 @@ __pycache__/
 
 # Playwright artefakty (screenshoty při generování og-image)
 .playwright-mcp/
+
+# Local Netlify folder
+.netlify
