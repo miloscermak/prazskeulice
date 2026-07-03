@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jak vznikl web Pražské ulice v číslech</title>
+<meta name="description" content="Technický postup: Wikidata, LLM klasifikace a statický web. Jak vznikl web Pražské ulice v číslech s pomocí Claude Code.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --enamel:#AF1E2A;
+  --enamel-dark:#8C1622;
+  --blue:#1D4E9E;
+  --plaster:#EDE8DD;
+  --ink:#26221c;
+  --paper:#FBF9F3;
+  --line:#d8d2c4;
+  --sign-font:'Oswald',sans-serif;
+  --body-font:'IBM Plex Sans',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--plaster);color:var(--ink);font-family:var(--body-font);line-height:1.65;font-size:17px}
+main{max-width:720px;margin:0 auto;padding:0 20px 100px}
+
+.sign{
+  background:linear-gradient(160deg,var(--enamel) 0%,var(--enamel-dark) 100%);
+  color:#fff;
+  border:3px solid #fff;
+  outline:1px solid rgba(0,0,0,.25);
+  border-radius:6px;
+  box-shadow:0 3px 10px rgba(38,34,28,.28), inset 0 1px 0 rgba(255,255,255,.25);
+  font-family:var(--sign-font);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  padding:.5em 1em;
+  display:inline-block;
+}
+.sign small{display:block;font-size:.42em;font-weight:400;letter-spacing:.28em;opacity:.85;margin-bottom:.3em}
+
+header{padding:64px 0 20px;text-align:center}
+.hero-sign{font-size:clamp(24px,4.6vw,40px);font-weight:600;padding:.45em .8em .55em;line-height:1.22;max-width:100%}
+header p.sub{max-width:560px;margin:22px auto 0;color:#5b5449}
+
+h2{
+  font-family:var(--sign-font);
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  font-size:21px;
+  font-weight:500;
+  color:var(--enamel);
+  margin:52px 0 12px;
+}
+p{margin:14px 0}
+blockquote{
+  margin:18px 0;
+  padding:14px 18px;
+  background:var(--paper);
+  border-left:4px solid var(--enamel);
+  border-radius:0 6px 6px 0;
+  font-style:italic;
+  color:#4b453b;
+}
+strong{font-weight:600}
+table{width:100%;border-collapse:collapse;margin:20px 0;background:var(--paper);border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:15.5px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-family:var(--sign-font);text-transform:uppercase;letter-spacing:.05em;font-weight:500;font-size:14px;background:var(--plaster)}
+tr:last-child td{border-bottom:none}
+td:last-child{font-family:var(--mono);font-size:14.5px}
+a{color:var(--blue)}
+.zpet{margin-top:64px;padding-top:24px;border-top:1px solid var(--line)}
+.zpet a{font-family:var(--mono);font-size:14px;text-decoration:none}
+.zpet a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <a href="index.html" style="text-decoration:none"><div class="sign hero-sign"><small>Ze zákulisí</small>Jak vznikl<br>tento web</div></a>
+  <p class="sub">Technický postup krok za krokem: od jednoho promptu přes Wikidata
+  a jazykový model až po statický web. Vše s pomocí Claude Code.</p>
+</header>
+
+<h2>Zadání</h2>
+<p>Výchozí prompt pro Claude:</p>
+<blockquote>Projekt: v Praze je cca 7800 ulic. chtěl bych udělat hezký web, který
+udělá statistiky a funfakty na základě jejich názvů. Kolik ulic je pojmenovaných
+po lidech? kolik po zvířatech? kolik má geografické názvy? atd.
+napadá tě k tomu něco?</blockquote>
+
+<h2>Architektura</h2>
+<p>Tři fáze: získání dat → klasifikace → statický web. Žádný backend, žádná
+databáze, žádný framework. Výstupem pipeline je jeden JSON, nad kterým běží
+jeden HTML soubor.</p>
+
+<h2>Fáze 1: Wikidata (strukturovaná data zadarmo)</h2>
+<p>Pražské ulice byly do Wikidat hromadně importovány z RÚIAN, takže je nebylo
+nutné stahovat z katastru. Jeden SPARQL dotaz vrátil všechny položky typu ulice
+a náměstí ležící v Praze: <strong>8 066 záznamů</strong>.</p>
+<p>Klíčová je vlastnost <strong>P138 („pojmenováno po“)</strong>: měla ji
+vyplněnou 3 830 ulic. Pokud P138 odkazuje na člověka, dotaz rovnou přibral
+pohlaví (P21), profese (P106), roky narození a úmrtí a občanství. Tím bylo
+1 155 ulic klasifikováno jako „po osobě“ bez jediného dotazu na LLM.</p>
+
+<h2>Fáze 2: LLM doklasifikace zbytku</h2>
+<p>Zbylých 6 911 názvů klasifikoval Claude Haiku přes OpenRouter, v dávkách
+po 25, do 12 pevných kategorií (osoba, česká obec, zahraničí, rostlina, zvíře,
+řemeslo, pomístní název, vlastnost atd.). Skript ukládá průběh po každé dávce,
+takže jde kdykoli přerušit a navázat. Náklady: jednotky korun, běh cca
+30 minut.</p>
+<p>Kontrola správnosti: akademický Pražský uličník uvádí 32 % ulic
+pojmenovaných po osobách. Pipeline, která tento údaj neznala, došla
+k 27,7 % (2 235 ulic). Řádová shoda potvrdila, že LLM klasifikaci lze věřit.</p>
+
+<h2>Fáze 3: Doplnění pohlaví</h2>
+<p>Wikidata znala pohlaví jen u poloviny osob. U zbylých 1 055 zafungovala
+nejdřív gramatická heuristika: ulice po ženách mají genitiv (Milady Horákové,
+koncovka -ové), po mužích přivlastňovací tvar (-ova) nebo genitiv mužských
+jmen. Heuristika vyřešila 748 případů (71 %), LLM dalších 191,
+u 115 nejednoznačných (Curieových, Bratří Čapků) zůstalo „neznámé“.</p>
+<p>Výsledek: <strong>1 960 ulic po mužích, 160 po ženách</strong>
+(poměr 12,3 : 1).</p>
+
+<h2>Fáze 4: Web</h2>
+<p>Statický single-file HTML s vanilla JS, bez frameworků. Data se načítají
+z data.js (ne fetch, aby web fungoval i z disku). Vizuál stojí na jediném
+motivu: pražské smaltované cedule, červené pro názvy, modré pro čísla.
+Součástí je vyhledávač všech 8 066 ulic s kategorií a vysvětlením původu
+názvu.</p>
+
+<h2>Fáze 5: Kvíz</h2>
+<p>Interaktivní hra „skutečná, nebo vymyšlená pražská ulice?“. Claude
+předgeneroval 55 falešných názvů napodobujících reálné pražské vzory
+(Za Flusárnou, Rorýsí, U Vodníkovy tůně) a uložil je přímo do JavaScriptu.
+Web při načtení porovná falešné názvy se skutečnými daty a případné náhodné
+shody z kvízu vyřadí, takže kolize s realitou nehrozí. U skutečných ulic kvíz
+po odpovědi zobrazí kategorii a původ názvu, hra tedy zároveň slouží jako
+nenápadná prohlídka datasetu. Vše běží na straně prohlížeče, bez jediného
+volání API.</p>
+
+<h2>Shrnutí čísel</h2>
+<table>
+  <tr><th>Krok</th><th>Výsledek</th></tr>
+  <tr><td>SPARQL z Wikidat</td><td>8 066 ulic, 3 830 s P138</td></tr>
+  <tr><td>Osoby z Wikidat</td><td>1 155 (zdarma)</td></tr>
+  <tr><td>LLM klasifikace</td><td>6 911 názvů, ~30 min, jednotky Kč</td></tr>
+  <tr><td>Pohlaví heuristikou</td><td>748 ze 1 055 (zdarma)</td></tr>
+  <tr><td>Gender gap</td><td>1 960 mužů : 160 žen</td></tr>
+</table>
+
+<p class="zpet"><a href="index.html">← zpět na Pražské ulice v číslech</a></p>
+
+</main>
+</body>
+</html>
